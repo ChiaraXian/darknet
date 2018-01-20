@@ -18,6 +18,7 @@ SLIB=./lib/libdarknet.so
 ALIB=./lib/libdarknet.a
 EXEC=darknet
 OBJDIR=./obj/
+LIBDIR=./lib/
 
 CC=gcc
 NVCC=nvcc 
@@ -27,6 +28,7 @@ OPTS=-Ofast
 LDFLAGS= -lm -pthread 
 COMMON= -Iinclude/ -Isrc/
 CFLAGS=-Wall -Wno-unknown-pragmas -Wfatal-errors -fPIC
+$(shell mkdir -p $(LIBDIR))
 
 ifeq ($(OPENMP), 1) 
 CFLAGS+= -fopenmp
@@ -69,12 +71,12 @@ OBJS = $(addprefix $(OBJDIR), $(OBJ))
 DEPS = $(wildcard src/*.h) Makefile include/darknet.h
 
 #all: obj backup results $(SLIB) $(ALIB) $(EXEC)
+
+
 all: obj  results $(SLIB) $(ALIB) $(EXEC)
-
-
 $(EXEC): $(EXECOBJ) $(ALIB)
 	$(CC) $(COMMON) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(ALIB)
-
+$(OUT): $(MD) $(LIBDIR) 
 $(ALIB): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
