@@ -14,8 +14,8 @@ ARCH= -gencode arch=compute_30,code=sm_30 \
 # ARCH= -gencode arch=compute_52,code=compute_52
 
 VPATH=./src/:./examples
-SLIB=libdarknet.so
-ALIB=libdarknet.a
+SLIB=./lib/libdarknet.so
+ALIB=./lib/libdarknet.a
 EXEC=darknet
 OBJDIR=./obj/
 
