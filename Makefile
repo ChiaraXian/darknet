@@ -14,21 +14,21 @@ ARCH= -gencode arch=compute_30,code=sm_30 \
 # ARCH= -gencode arch=compute_52,code=compute_52
 
 VPATH=./src/:./examples
-SLIB=./lib/libdarknet.so
-ALIB=./lib/libdarknet.a
-EXEC=darknet
+SLIB_NAME=./libdarknet.so
+ALIB_NAME=./libdarknet.a
+EXEC_NAME=darknet
 OBJDIR=./obj/
 LIBDIR=./lib/
 
 CC=gcc
-NVCC=nvcc 
+#Give the path of NVCC installation  NVCC=nvcc
+NVCC=/usr/local/cuda/bin/nvcc
 AR=ar
 ARFLAGS=rcs
 OPTS=-Ofast
 LDFLAGS= -lm -pthread 
 COMMON= -Iinclude/ -Isrc/
 CFLAGS=-Wall -Wno-unknown-pragmas -Wfatal-errors -fPIC
-$(shell mkdir -p $(LIBDIR))
 
 ifeq ($(OPENMP), 1) 
 CFLAGS+= -fopenmp
@@ -51,13 +51,21 @@ ifeq ($(GPU), 1)
 COMMON+= -DGPU -I/usr/local/cuda/include/
 CFLAGS+= -DGPU
 LDFLAGS+= -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand
+LIBDIR=./lib_gpu/
 endif
 
 ifeq ($(CUDNN), 1) 
 COMMON+= -DCUDNN 
 CFLAGS+= -DCUDNN
 LDFLAGS+= -lcudnn
+LIBDIR=./lib_cudnn/
 endif
+$(shell mkdir -p $(LIBDIR))
+
+SLIB=$(LIBDIR)/$(SLIB_NAME)
+ALIB=$(LIBDIR)/$(ALIB_NAME)
+EXEC=$(LIBDIR)/$(EXEC_NAME)
+
 
 OBJ=gemm.o utils.o cuda.o deconvolutional_layer.o convolutional_layer.o list.o image.o activations.o im2col.o col2im.o blas.o crop_layer.o dropout_layer.o maxpool_layer.o softmax_layer.o data.o matrix.o network.o connected_layer.o cost_layer.o parser.o option_list.o detection_layer.o route_layer.o box.o normalization_layer.o avgpool_layer.o layer.o local_layer.o shortcut_layer.o activation_layer.o rnn_layer.o gru_layer.o crnn_layer.o demo.o batchnorm_layer.o region_layer.o reorg_layer.o tree.o  lstm_layer.o
 EXECOBJA=captcha.o lsd.o super.o art.o tag.o cifar.o go.o rnn.o segmenter.o regressor.o classifier.o coco.o yolo.o detector.o nightmare.o attention.o darknet.o
